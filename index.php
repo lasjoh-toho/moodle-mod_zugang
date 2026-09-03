@@ -29,7 +29,7 @@ $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
 require_course_login($course);
 $context = context_course::instance($course->id);
 
-$event = \core\event\course_module_instance_list_viewed::create(['context' => $context]);
+$event = \mod_zugang\event\course_module_instance_list_viewed::create(['context' => $context]);
 $event->add_record_snapshot('course', $course);
 $event->trigger();
 

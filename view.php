@@ -35,7 +35,7 @@ require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/zugang:view', $context);
 
-$event = \core\event\course_module_viewed::create([
+$event = \mod_zugang\event\course_module_viewed::create([
     'objectid' => $zugang->id,
     'context'  => $context,
 ]);

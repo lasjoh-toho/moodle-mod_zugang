@@ -175,5 +175,69 @@ function xmldb_zugang_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2026090302, 'zugang');
     }
 
+    // 2026090303: on PostgreSQL, change_field_notnull() (2026090302) can
+    // fail with a ddl_dependency_exception if the column has a
+    // dependent index — e.g. zugang.wlanlistid / zugang.docklistid,
+    // which db/install.xml also indexes. This step re-does the same
+    // nullability reconciliation, but drops the specific indexes known
+    // to depend on an affected column first and recreates them
+    // afterwards, so it succeeds on Postgres as well as MySQL/MariaDB
+    // (where the previous step already worked and this is a no-op).
+    if ($oldversion < 2026090303) {
+
+        // table => [fieldname => [type, precision, [index definitions depending on it]]]
+        $fieldswithindexes = [
+            'zugang' => [
+                'wlanlistid' => [XMLDB_TYPE_INTEGER, '10', [
+                    ['name' => 'wlanlistid', 'fields' => ['wlanlistid']],
+                ]],
+                'docklistid' => [XMLDB_TYPE_INTEGER, '10', [
+                    ['name' => 'docklistid', 'fields' => ['docklistid']],
+                ]],
+            ],
+            'zugang_list_entry' => [
+                'userid' => [XMLDB_TYPE_INTEGER, '10', [
+                    ['name' => 'listid-userid', 'fields' => ['listid', 'userid']],
+                ]],
+            ],
+        ];
+
+        foreach ($fieldswithindexes as $tablename => $fields) {
+            if (!$dbman->table_exists($tablename)) {
+                continue;
+            }
+            $table = new xmldb_table($tablename);
+
+            foreach ($fields as $fieldname => [$type, $precision, $indexdefs]) {
+                $field = new xmldb_field($fieldname, $type, $precision, null, false, null, null);
+                if (!$dbman->field_exists($table, $field)) {
+                    $dbman->add_field($table, $field);
+                    continue;
+                }
+
+                // Drop any dependent indexes first.
+                $droppedindexes = [];
+                foreach ($indexdefs as $indexdef) {
+                    $index = new xmldb_index($indexdef['name'], XMLDB_INDEX_NOTUNIQUE, $indexdef['fields']);
+                    if ($dbman->index_exists($table, $index)) {
+                        $dbman->drop_index($table, $index);
+                        $droppedindexes[] = $index;
+                    }
+                }
+
+                $dbman->change_field_notnull($table, $field);
+
+                // Recreate whatever we dropped.
+                foreach ($droppedindexes as $index) {
+                    if (!$dbman->index_exists($table, $index)) {
+                        $dbman->add_index($table, $index);
+                    }
+                }
+            }
+        }
+
+        upgrade_mod_savepoint(true, 2026090303, 'zugang');
+    }
+
     return true;
 }

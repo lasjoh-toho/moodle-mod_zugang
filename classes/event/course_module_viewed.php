@@ -14,19 +14,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Version information for mod_zugang.
- *
- * @package     mod_zugang
- * @copyright   2026 lasjoh-toho
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+namespace mod_zugang\event;
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'mod_zugang';
-$plugin->version   = 2026090304;
-$plugin->requires  = 2022041900; // Moodle 4.0+.
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.0.4';
-$plugin->cron      = 0;
+/**
+ * \core\event\course_module_viewed is abstract on purpose — every
+ * activity module must supply its own concrete subclass naming its
+ * instance table. This is that subclass for mod_zugang, used by
+ * view.php's standard "activity was viewed" tracking event.
+ *
+ * @package mod_zugang
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class course_module_viewed extends \core\event\course_module_viewed {
+    protected function init() {
+        $this->data['objecttable'] = 'zugang';
+        parent::init();
+    }
+}
