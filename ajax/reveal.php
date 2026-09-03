@@ -45,10 +45,7 @@ $cm = get_coursemodule_from_id('zugang', $cmid, 0, false, IGNORE_MISSING);
 if (!$cm) {
     header('Content-Type: application/json');
     http_response_code(404);
-    die(json_encode([
-        'error' => get_string('cmidnotfound', 'mod_zugang', $cmid),
-        'debug_raw_post' => $_POST,
-    ]));
+    die(json_encode(['error' => get_string('cmidnotfound', 'mod_zugang', $cmid)]));
 }
 $course = $DB->get_record('course', ['id' => $cm->course]);
 if (!$course) {

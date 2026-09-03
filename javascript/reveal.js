@@ -6,6 +6,13 @@
  * $PAGE->requires->js() and started by $PAGE->requires->js_init_call()
  * calling M.mod_zugang.init() with (cmid, revealseconds).
  *
+ * IMPORTANT: Moodle's js_init_call() ALWAYS prepends the YUI Y instance
+ * as the first argument to whatever function it calls — this is
+ * documented, longstanding Moodle behaviour, not something we opt into.
+ * The init function signature below accounts for that; Y itself is
+ * unused since this file talks to the DOM/fetch directly rather than
+ * through YUI.
+ *
  * The sesskey is deliberately NOT taken from the value passed into
  * init() at page-render time — if the tab was left open for a while
  * (very plausible: a teacher/admin builds and tests a page, then leaves
@@ -18,7 +25,7 @@
  */
 M.mod_zugang = M.mod_zugang || {};
 
-M.mod_zugang.init = function(cmid, revealseconds) {
+M.mod_zugang.init = function(Y, cmid, revealseconds) {
     'use strict';
 
     var ajaxBase = M.cfg.wwwroot + '/mod/zugang/ajax/';
