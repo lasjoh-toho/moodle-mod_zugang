@@ -35,7 +35,7 @@ try {
 } catch (\moodle_exception $e) {
     header('Content-Type: application/json');
     http_response_code(403);
-    die(json_encode(['error' => get_string('sessionexpired', 'mod_zugang'), 'sessionexpired' => true]));
+    die(json_encode(['error' => get_string('sessionexpired', 'mod_zugang'), 'reload' => true]));
 }
 
 $cmid = required_param('cmid', PARAM_INT);
@@ -49,7 +49,17 @@ require_capability('mod/zugang:reveal', $context);
 
 $zugang = $DB->get_record('zugang', ['id' => $cm->instance], '*', MUST_EXIST);
 
-$entry = $DB->get_record('zugang_list_entry', ['id' => $entryid], '*', MUST_EXIST);
+$entry = $DB->get_record('zugang_list_entry', ['id' => $entryid]);
+if (!$entry) {
+    // Most likely cause: the list was re-uploaded since this page was
+    // rendered/cached (a re-import replaces all entries with fresh ids),
+    // so the entryid baked into this page no longer exists. Ask the
+    // student to reload rather than showing Moodle's raw "record not
+    // found" message, which gives them nothing actionable.
+    header('Content-Type: application/json');
+    http_response_code(404);
+    die(json_encode(['error' => get_string('entrygone', 'mod_zugang'), 'reload' => true]));
+}
 
 // The entry must belong to a list this specific activity instance
 // actually references, and must be confirmed for THIS user.

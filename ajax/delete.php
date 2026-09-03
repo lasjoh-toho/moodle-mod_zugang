@@ -36,7 +36,7 @@ try {
 } catch (\moodle_exception $e) {
     header('Content-Type: application/json');
     http_response_code(403);
-    die(json_encode(['error' => get_string('sessionexpired', 'mod_zugang'), 'sessionexpired' => true]));
+    die(json_encode(['error' => get_string('sessionexpired', 'mod_zugang'), 'reload' => true]));
 }
 
 $cmid = required_param('cmid', PARAM_INT);
@@ -49,7 +49,16 @@ $context = context_module::instance($cm->id);
 require_capability('mod/zugang:deleteownpassword', $context);
 
 $zugang = $DB->get_record('zugang', ['id' => $cm->instance], '*', MUST_EXIST);
-$entry = $DB->get_record('zugang_list_entry', ['id' => $entryid], '*', MUST_EXIST);
+$entry = $DB->get_record('zugang_list_entry', ['id' => $entryid]);
+if (!$entry) {
+    // Already gone (e.g. deleted in another tab, or the list was
+    // re-uploaded since this page was rendered) — the end state the
+    // student wants (no password stored) already holds, so this is a
+    // success, not an error.
+    header('Content-Type: application/json');
+    echo json_encode(['deleted' => true]);
+    exit;
+}
 
 $validlist = in_array((int) $entry->listid, array_filter([(int) $zugang->wlanlistid, (int) $zugang->docklistid]), true);
 if (!$validlist || $entry->matchstatus !== 'confirmed' || (int) $entry->userid !== (int) $USER->id) {

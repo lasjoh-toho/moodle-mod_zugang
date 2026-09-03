@@ -95,6 +95,7 @@ $string['encryptionkeyinvalid'] = 'The stored mod_zugang encryption key is inval
 $string['encryptionfailed'] = 'Encryption failed.';
 $string['decryptionfailed'] = 'Decryption failed.';
 $string['sessionexpired'] = 'Your session has expired. Reload the page now?';
+$string['entrygone'] = 'This entry is no longer current, e.g. because the list was re-uploaded in the meantime. Reload the page now?';
 
 $string['event_password_revealed'] = 'Password revealed';
 $string['event_password_deleted'] = 'Password deleted';

@@ -37,7 +37,7 @@ M.mod_zugang.init = function(cmid, revealseconds) {
             return r.json().catch(function() {
                 // The server didn't return JSON at all — most likely Moodle's
                 // own session-expired HTML page rather than our endpoint.
-                return {error: M.util.get_string('sessionexpired', 'mod_zugang')};
+                return {error: M.util.get_string('sessionexpired', 'mod_zugang'), reload: true};
             });
         });
     }
@@ -66,9 +66,9 @@ M.mod_zugang.init = function(cmid, revealseconds) {
             post(ajaxBase + 'reveal.php', {cmid: cmid, entryid: entryId}).then(function(data) {
                 if (data.error) {
                     revealBtn.disabled = false;
-                    if (data.sessionexpired && window.confirm(data.error)) {
+                    if (data.reload && window.confirm(data.error)) {
                         window.location.reload();
-                    } else if (!data.sessionexpired) {
+                    } else if (!data.reload) {
                         window.alert(data.error);
                     }
                     return;
@@ -104,9 +104,9 @@ M.mod_zugang.init = function(cmid, revealseconds) {
                 post(ajaxBase + 'delete.php', {cmid: cmid, entryid: entryId}).then(function(data) {
                     if (data.error) {
                         deleteBtn.disabled = false;
-                        if (data.sessionexpired && window.confirm(data.error)) {
+                        if (data.reload && window.confirm(data.error)) {
                             window.location.reload();
-                        } else if (!data.sessionexpired) {
+                        } else if (!data.reload) {
                             window.alert(data.error);
                         }
                         return;

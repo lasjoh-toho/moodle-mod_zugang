@@ -25,8 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_zugang';
-$plugin->version   = 2026090306;
+$plugin->version   = 2026090307;
 $plugin->requires  = 2022041900; // Moodle 4.0+.
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.0.6';
+$plugin->release   = '1.0.7';
 $plugin->cron      = 0;

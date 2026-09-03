@@ -113,7 +113,7 @@ if (empty($panels)) {
 }
 
 $PAGE->requires->js('/mod/zugang/javascript/reveal.js');
-$PAGE->requires->strings_for_js(['passworddeletedconfirm', 'sessionexpired'], 'mod_zugang');
+$PAGE->requires->strings_for_js(['passworddeletedconfirm', 'sessionexpired', 'entrygone'], 'mod_zugang');
 $PAGE->requires->js_init_call('M.mod_zugang.init', [
     $cm->id,
     (int) $zugang->revealseconds,
