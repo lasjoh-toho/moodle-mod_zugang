@@ -96,6 +96,9 @@ $string['encryptionfailed'] = 'Encryption failed.';
 $string['decryptionfailed'] = 'Decryption failed.';
 $string['sessionexpired'] = 'Your session has expired. Reload the page now?';
 $string['entrygone'] = 'This entry is no longer current, e.g. because the list was re-uploaded in the meantime. Reload the page now?';
+$string['cmidnotfound'] = 'No course module with id {$a} found. Please reload the page.';
+$string['coursenotfound'] = 'No course with id {$a} found. Please reload the page.';
+$string['zugangnotfound'] = 'No Zugang activity with id {$a} found. Please reload the page.';
 
 $string['event_password_revealed'] = 'Password revealed';
 $string['event_password_deleted'] = 'Password deleted';

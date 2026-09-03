@@ -96,6 +96,9 @@ $string['encryptionfailed'] = 'Verschlüsselung fehlgeschlagen.';
 $string['decryptionfailed'] = 'Entschlüsselung fehlgeschlagen.';
 $string['sessionexpired'] = 'Ihre Sitzung ist abgelaufen. Seite jetzt neu laden?';
 $string['entrygone'] = 'Dieser Eintrag ist nicht mehr aktuell, z. B. weil die Liste zwischenzeitlich neu hochgeladen wurde. Seite jetzt neu laden?';
+$string['cmidnotfound'] = 'Kein Kursmodul mit ID {$a} gefunden. Bitte Seite neu laden.';
+$string['coursenotfound'] = 'Kein Kurs mit ID {$a} gefunden. Bitte Seite neu laden.';
+$string['zugangnotfound'] = 'Keine Zugang-Aktivität mit ID {$a} gefunden. Bitte Seite neu laden.';
 
 $string['event_password_revealed'] = 'Kennwort angezeigt';
 $string['event_password_deleted'] = 'Kennwort gelöscht';

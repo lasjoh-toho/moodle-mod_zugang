@@ -41,13 +41,28 @@ try {
 $cmid = required_param('cmid', PARAM_INT);
 $entryid = required_param('entryid', PARAM_INT);
 
-$cm = get_coursemodule_from_id('zugang', $cmid, 0, false, MUST_EXIST);
-$course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+$cm = get_coursemodule_from_id('zugang', $cmid, 0, false, IGNORE_MISSING);
+if (!$cm) {
+    header('Content-Type: application/json');
+    http_response_code(404);
+    die(json_encode(['error' => get_string('cmidnotfound', 'mod_zugang', $cmid)]));
+}
+$course = $DB->get_record('course', ['id' => $cm->course]);
+if (!$course) {
+    header('Content-Type: application/json');
+    http_response_code(404);
+    die(json_encode(['error' => get_string('coursenotfound', 'mod_zugang', $cm->course)]));
+}
 require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/zugang:reveal', $context);
 
-$zugang = $DB->get_record('zugang', ['id' => $cm->instance], '*', MUST_EXIST);
+$zugang = $DB->get_record('zugang', ['id' => $cm->instance]);
+if (!$zugang) {
+    header('Content-Type: application/json');
+    http_response_code(404);
+    die(json_encode(['error' => get_string('zugangnotfound', 'mod_zugang', $cm->instance)]));
+}
 
 $entry = $DB->get_record('zugang_list_entry', ['id' => $entryid]);
 if (!$entry) {
