@@ -43,6 +43,7 @@ $string['nolistsconfigured'] = 'No password list is configured for this activity
 $string['viewonlynote'] = 'Only students with a matching entry see a button here.';
 $string['nopasswordforyou'] = 'There is no password for you in this list.';
 $string['revealbutton'] = 'Reveal password';
+$string['accountlabel'] = 'Account: {$a}';
 $string['deletebutton'] = 'Delete password';
 $string['deleteconfirm'] = 'Permanently delete this password? This cannot be undone.';
 $string['passworddeletedconfirm'] = 'The password has been deleted.';

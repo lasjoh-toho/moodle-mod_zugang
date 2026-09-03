@@ -43,6 +43,7 @@ $string['nolistsconfigured'] = 'Für diese Aktivität ist keine Kennwortliste hi
 $string['viewonlynote'] = 'Nur Schülerinnen und Schüler mit einem passenden Eintrag sehen hier einen Button.';
 $string['nopasswordforyou'] = 'Für Sie liegt in dieser Liste kein Kennwort vor.';
 $string['revealbutton'] = 'Kennwort anzeigen';
+$string['accountlabel'] = 'Account: {$a}';
 $string['deletebutton'] = 'Kennwort löschen';
 $string['deleteconfirm'] = 'Kennwort endgültig löschen? Dies kann nicht rückgängig gemacht werden.';
 $string['passworddeletedconfirm'] = 'Das Kennwort wurde gelöscht.';

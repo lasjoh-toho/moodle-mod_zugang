@@ -74,11 +74,12 @@ foreach ([
     }
     $entry = $canreveal ? \mod_zugang\list_manager::get_confirmed_entry_for_user((int) $info['listid'], (int) $USER->id) : false;
     $panels[] = (object) [
-        'type'     => $type,
-        'label'    => get_string($info['labelkey'], 'mod_zugang'),
-        'listname' => format_string($list->name),
-        'entryid'  => $entry ? (int) $entry->id : 0,
-        'hasentry' => (bool) $entry,
+        'type'        => $type,
+        'label'       => get_string($info['labelkey'], 'mod_zugang'),
+        'listname'    => format_string($list->name),
+        'entryid'     => $entry ? (int) $entry->id : 0,
+        'hasentry'    => (bool) $entry,
+        'accountname' => $entry ? $entry->sourceref : null,
     ];
 }
 
@@ -96,6 +97,10 @@ if (empty($panels)) {
             echo html_writer::div(get_string('nopasswordforyou', 'mod_zugang'), 'text-muted');
         } else {
             echo html_writer::start_div('zugang-reveal-widget', ['data-entryid' => $panel->entryid]);
+            echo html_writer::div(
+                get_string('accountlabel', 'mod_zugang', s($panel->accountname)),
+                'zugang-account text-muted'
+            );
             echo html_writer::tag('button', get_string('revealbutton', 'mod_zugang'),
                 ['class' => 'btn btn-primary zugang-reveal-btn', 'type' => 'button']);
             echo html_writer::div('', 'zugang-password-display', ['style' => 'display:none']);
