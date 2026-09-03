@@ -94,6 +94,7 @@ $string['encryptionkeymissing'] = 'The mod_zugang encryption key is missing. Ple
 $string['encryptionkeyinvalid'] = 'The stored mod_zugang encryption key is invalid.';
 $string['encryptionfailed'] = 'Encryption failed.';
 $string['decryptionfailed'] = 'Decryption failed.';
+$string['sessionexpired'] = 'Your session has expired. Reload the page now?';
 
 $string['event_password_revealed'] = 'Password revealed';
 $string['event_password_deleted'] = 'Password deleted';

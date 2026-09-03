@@ -4,19 +4,27 @@
  * Deliberately plain JS (no AMD/webpack build step) so the plugin has
  * zero build tooling and "just works" once installed. Loaded via
  * $PAGE->requires->js() and started by $PAGE->requires->js_init_call()
- * calling M.mod_zugang.init() with (cmid, revealseconds, sesskey).
+ * calling M.mod_zugang.init() with (cmid, revealseconds).
+ *
+ * The sesskey is deliberately NOT taken from the value passed into
+ * init() at page-render time — if the tab was left open for a while
+ * (very plausible: a teacher/admin builds and tests a page, then leaves
+ * it open), that snapshot can go stale relative to the live session
+ * well before the rest of the page does. M.cfg.sesskey is Moodle's own
+ * live config object and is read fresh on every click instead.
  *
  * @package mod_zugang
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 M.mod_zugang = M.mod_zugang || {};
 
-M.mod_zugang.init = function(cmid, revealseconds, sesskey) {
+M.mod_zugang.init = function(cmid, revealseconds) {
     'use strict';
 
     var ajaxBase = M.cfg.wwwroot + '/mod/zugang/ajax/';
 
     function post(url, params) {
+        params.sesskey = M.cfg.sesskey;
         var body = Object.keys(params).map(function(k) {
             return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
         }).join('&');
@@ -26,7 +34,11 @@ M.mod_zugang.init = function(cmid, revealseconds, sesskey) {
             body: body,
             credentials: 'same-origin'
         }).then(function(r) {
-            return r.json();
+            return r.json().catch(function() {
+                // The server didn't return JSON at all — most likely Moodle's
+                // own session-expired HTML page rather than our endpoint.
+                return {error: M.util.get_string('sessionexpired', 'mod_zugang')};
+            });
         });
     }
 
@@ -37,7 +49,6 @@ M.mod_zugang.init = function(cmid, revealseconds, sesskey) {
         var display = widget.querySelector('.zugang-password-display');
         var countdown = widget.querySelector('.zugang-countdown');
         var timerHandle = null;
-        var closeHandle = null;
 
         function closePanel() {
             if (timerHandle) {
@@ -52,10 +63,14 @@ M.mod_zugang.init = function(cmid, revealseconds, sesskey) {
 
         revealBtn.addEventListener('click', function() {
             revealBtn.disabled = true;
-            post(ajaxBase + 'reveal.php', {cmid: cmid, entryid: entryId, sesskey: sesskey}).then(function(data) {
+            post(ajaxBase + 'reveal.php', {cmid: cmid, entryid: entryId}).then(function(data) {
                 if (data.error) {
                     revealBtn.disabled = false;
-                    window.alert(data.error);
+                    if (data.sessionexpired && window.confirm(data.error)) {
+                        window.location.reload();
+                    } else if (!data.sessionexpired) {
+                        window.alert(data.error);
+                    }
                     return;
                 }
                 display.textContent = data.password;
@@ -86,10 +101,14 @@ M.mod_zugang.init = function(cmid, revealseconds, sesskey) {
                     return;
                 }
                 deleteBtn.disabled = true;
-                post(ajaxBase + 'delete.php', {cmid: cmid, entryid: entryId, sesskey: sesskey}).then(function(data) {
+                post(ajaxBase + 'delete.php', {cmid: cmid, entryid: entryId}).then(function(data) {
                     if (data.error) {
                         deleteBtn.disabled = false;
-                        window.alert(data.error);
+                        if (data.sessionexpired && window.confirm(data.error)) {
+                            window.location.reload();
+                        } else if (!data.sessionexpired) {
+                            window.alert(data.error);
+                        }
                         return;
                     }
                     closePanel();

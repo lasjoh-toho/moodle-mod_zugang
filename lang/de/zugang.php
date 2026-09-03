@@ -94,6 +94,7 @@ $string['encryptionkeymissing'] = 'Der Verschlüsselungsschlüssel für mod_zuga
 $string['encryptionkeyinvalid'] = 'Der gespeicherte Verschlüsselungsschlüssel für mod_zugang ist ungültig.';
 $string['encryptionfailed'] = 'Verschlüsselung fehlgeschlagen.';
 $string['decryptionfailed'] = 'Entschlüsselung fehlgeschlagen.';
+$string['sessionexpired'] = 'Ihre Sitzung ist abgelaufen. Seite jetzt neu laden?';
 
 $string['event_password_revealed'] = 'Kennwort angezeigt';
 $string['event_password_deleted'] = 'Kennwort gelöscht';

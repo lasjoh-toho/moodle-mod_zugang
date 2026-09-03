@@ -29,8 +29,14 @@ require(__DIR__ . '/../../../config.php');
 require_once($CFG->dirroot . '/mod/zugang/classes/crypto.php');
 require_once($CFG->dirroot . '/mod/zugang/classes/event/password_revealed.php');
 
-require_login();
-require_sesskey();
+try {
+    require_login();
+    require_sesskey();
+} catch (\moodle_exception $e) {
+    header('Content-Type: application/json');
+    http_response_code(403);
+    die(json_encode(['error' => get_string('sessionexpired', 'mod_zugang'), 'sessionexpired' => true]));
+}
 
 $cmid = required_param('cmid', PARAM_INT);
 $entryid = required_param('entryid', PARAM_INT);
