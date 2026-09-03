@@ -118,5 +118,62 @@ function xmldb_zugang_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2026090301, 'zugang');
     }
 
+    // 2026090302: the 2026090301 step above only added columns that were
+    // completely MISSING. On sites where a column existed but with the
+    // wrong attributes from the original partial install (seen in
+    // practice: zugang.wlanlistid / zugang.docklistid created as NOT
+    // NULL even though install.xml always declared them nullable), that
+    // step was a no-op and the bad attribute survived. This step
+    // reconciles nullability for every field the schema declares
+    // nullable, on every table, regardless of whether the column already
+    // existed — so it also fixes columns add_field() skipped last time.
+    if ($oldversion < 2026090302) {
+
+        // [table => [fieldname => [type, precision, notnull]]] for every
+        // NULLABLE field in db/install.xml. NOTNULL fields are left alone:
+        // relaxing nullability is always safe, tightening it is not (would
+        // require a fill value for existing NULL rows), so this only ever
+        // loosens constraints to match the schema, never the reverse.
+        $nullablefields = [
+            'zugang' => [
+                'wlanlistid' => [XMLDB_TYPE_INTEGER, '10'],
+                'docklistid' => [XMLDB_TYPE_INTEGER, '10'],
+            ],
+            'zugang_list' => [
+                'description' => [XMLDB_TYPE_TEXT, null],
+            ],
+            'zugang_list_entry' => [
+                'firstname'       => [XMLDB_TYPE_CHAR, '255'],
+                'lastname'        => [XMLDB_TYPE_CHAR, '255'],
+                'classname'       => [XMLDB_TYPE_CHAR, '255'],
+                'userid'          => [XMLDB_TYPE_INTEGER, '10'],
+                'suggesteduserid' => [XMLDB_TYPE_INTEGER, '10'],
+                'suggestedscore'  => [XMLDB_TYPE_NUMBER, '5, 2'],
+            ],
+            'zugang_reveal_log' => [
+                'timedeleted' => [XMLDB_TYPE_INTEGER, '10'],
+            ],
+        ];
+
+        foreach ($nullablefields as $tablename => $fields) {
+            if (!$dbman->table_exists($tablename)) {
+                continue;
+            }
+            $table = new xmldb_table($tablename);
+            foreach ($fields as $fieldname => [$type, $precision]) {
+                $field = new xmldb_field($fieldname, $type, $precision, null, false, null, null);
+                if (!$dbman->field_exists($table, $field)) {
+                    $dbman->add_field($table, $field);
+                } else {
+                    // Column already there — align its nullability with
+                    // the schema even if everything else about it matches.
+                    $dbman->change_field_notnull($table, $field);
+                }
+            }
+        }
+
+        upgrade_mod_savepoint(true, 2026090302, 'zugang');
+    }
+
     return true;
 }
