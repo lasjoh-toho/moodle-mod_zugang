@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mod_zugang — Download</title>
+<meta name="description" content="Moodle-Aktivität für verschlüsselte WLAN- und Dock-Kennwortlisten. Neuestes Release herunterladen.">
+<style>
+  :root{
+    --ink:#12161c;
+    --paper:#f6f4ee;
+    --slate:#2b3340;
+    --brass:#b98a2e;
+    --brass-light:#e0b563;
+    --line:#3d4756;
+    --ok:#5f9e6f;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{
+    font-family:'SF Mono','Menlo',ui-monospace,Consolas,monospace;
+  }
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:5rem 1.5rem 6rem;
+  }
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:.5rem;
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:.35rem .7rem;
+    color:#9fb0c4;
+    font-family:'SF Mono','Menlo',ui-monospace,Consolas,monospace;
+    font-size:.78rem;
+    letter-spacing:.02em;
+  }
+  .badge svg{width:12px;height:12px;flex:none;}
+  h1{
+    font-size:clamp(2.4rem,6vw,3.4rem);
+    line-height:1.05;
+    margin:1.6rem 0 .8rem;
+    font-weight:500;
+    letter-spacing:-.01em;
+  }
+  .lede{
+    font-size:1.18rem;
+    color:#cfd7e2;
+    max-width:46ch;
+    margin:0 0 3rem;
+  }
+  .lede code{
+    font-family:'SF Mono','Menlo',ui-monospace,Consolas,monospace;
+    background:#1c222b;
+    padding:.1em .35em;
+    border-radius:3px;
+    font-size:.9em;
+    color:var(--brass-light);
+  }
+
+  .card{
+    background:var(--slate);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:2rem;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-between;
+    gap:1.5rem;
+  }
+  .card .meta{min-width:0;}
+  .card .meta .label{
+    font-family:'SF Mono','Menlo',ui-monospace,Consolas,monospace;
+    font-size:.72rem;
+    color:#8b98a9;
+    text-transform:none;
+    margin-bottom:.4rem;
+  }
+  .card .meta .filename{
+    font-family:'SF Mono','Menlo',ui-monospace,Consolas,monospace;
+    font-size:1.05rem;
+    color:var(--paper);
+    word-break:break-all;
+  }
+  .card .meta .subline{
+    font-size:.92rem;
+    color:#9fb0c4;
+    margin-top:.5rem;
+  }
+  a.dl{
+    flex:none;
+    display:inline-flex;
+    align-items:center;
+    gap:.6rem;
+    background:var(--brass);
+    color:#1a1305;
+    text-decoration:none;
+    font-family:'SF Mono','Menlo',ui-monospace,Consolas,monospace;
+    font-weight:600;
+    font-size:.92rem;
+    padding:.85rem 1.3rem;
+    border-radius:4px;
+    transition:background .15s ease;
+  }
+  a.dl:hover{background:var(--brass-light);}
+  a.dl svg{width:16px;height:16px;}
+
+  .state{
+    font-family:'SF Mono','Menlo',ui-monospace,Consolas,monospace;
+    font-size:.9rem;
+    color:#8b98a9;
+  }
+  .state.error{color:#d98a6a;}
+
+  .steps{
+    margin-top:3.5rem;
+    border-top:1px solid var(--line);
+    padding-top:2.2rem;
+  }
+  .steps h2{
+    font-size:.78rem;
+    font-family:'SF Mono','Menlo',ui-monospace,Consolas,monospace;
+    color:#8b98a9;
+    font-weight:400;
+    margin:0 0 1.2rem;
+    letter-spacing:.02em;
+  }
+  .steps ol{
+    margin:0;
+    padding:0 0 0 1.3rem;
+    color:#cfd7e2;
+  }
+  .steps li{margin-bottom:.6rem;}
+  .steps li:last-child{margin-bottom:0;}
+  .steps a{color:var(--brass-light);}
+
+  footer{
+    margin-top:3.5rem;
+    font-size:.85rem;
+    color:#6b7789;
+  }
+  footer a{color:#9fb0c4;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <span class="badge">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="1.5"/><path d="M7.5 11V7a4.5 4.5 0 0 1 9 0v4"/><circle cx="12" cy="15" r="1.2"/></svg>
+    Moodle-Aktivität
+  </span>
+
+  <h1>mod_zugang</h1>
+  <p class="lede">
+    Verschlüsselte WLAN- und Dock-Kennwortlisten als eigene Aktivität —
+    Admins laden die Listen hoch, jede Schülerin und jeder Schüler sieht
+    nur das eigene Kennwort per Klick. Installation über
+    <code>Site administration → Plugins → Install plugins</code>.
+  </p>
+
+  <div class="card">
+    <div class="meta">
+      <div class="label">Neuestes Release</div>
+      <div class="filename" id="asset-name">wird geladen …</div>
+      <div class="subline" id="asset-sub">&nbsp;</div>
+    </div>
+    <a class="dl" id="dl-link" href="https://github.com/lasjoh-toho/moodle-mod_zugang/releases/latest" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13"/><path d="M6 12l6 6 6-6"/><path d="M5 21h14"/></svg>
+      <span id="dl-label">Zur Release-Seite</span>
+    </a>
+  </div>
+
+  <div class="steps">
+    <h2>Installation</h2>
+    <ol>
+      <li><code class="mono">mod_zugang.zip</code> oben herunterladen.</li>
+      <li>In Moodle: <em>Site administration → Plugins → Install plugins</em>, Zip hochladen.</li>
+      <li>Nach der Installation Listen anlegen unter <em>Site administration → Plugins → Activity modules → Zugang → Listen verwalten</em>.</li>
+    </ol>
+  </div>
+
+  <footer>
+    Quellcode &amp; Changelog auf
+    <a href="https://github.com/lasjoh-toho/moodle-mod_zugang" rel="noopener">github.com/lasjoh-toho/moodle-mod_zugang</a>
+  </footer>
+</div>
+
+<script>
+(async function () {
+  var nameEl = document.getElementById('asset-name');
+  var subEl = document.getElementById('asset-sub');
+  var link = document.getElementById('dl-link');
+  var label = document.getElementById('dl-label');
+
+  try {
+    var res = await fetch('https://api.github.com/repos/lasjoh-toho/moodle-mod_zugang/releases/latest');
+    if (!res.ok) { throw new Error('no releases yet'); }
+    var data = await res.json();
+    var asset = (data.assets || []).find(function (a) { return /\.zip$/i.test(a.name); });
+
+    if (asset) {
+      nameEl.textContent = asset.name;
+      var kb = Math.round(asset.size / 1024);
+      var date = new Date(data.published_at).toLocaleDateString('de-DE', {year:'numeric', month:'long', day:'numeric'});
+      subEl.textContent = data.tag_name + ' · ' + kb + ' KB · veröffentlicht am ' + date;
+      link.href = asset.browser_download_url;
+      label.textContent = 'mod_zugang.zip herunterladen';
+    } else {
+      nameEl.textContent = data.tag_name || 'Release vorhanden';
+      subEl.textContent = 'Kein zip-Anhang gefunden — auf der Release-Seite nachsehen.';
+    }
+  } catch (e) {
+    nameEl.textContent = 'Noch kein Release veröffentlicht';
+    subEl.textContent = 'Sobald ein Tag (v*) gepusht wird, erscheint hier automatisch der Download.';
+    nameEl.className = 'filename state error';
+  }
+})();
+</script>
+</body>
+</html>

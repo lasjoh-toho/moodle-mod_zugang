@@ -1,0 +1,9 @@
+This repository contains a Moodle plugin (mod_zugang).
+
+All files are licensed under the GNU GPL v3 or later, per each file's
+own @license doc-block header. This follows Moodle's own licensing
+requirements for plugins that use Moodle's core APIs.
+
+Full text: http://www.gnu.org/copyleft/gpl.html
+
+Copyright (c) 2026 lasjoh-toho

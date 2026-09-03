@@ -1,0 +1,36 @@
+.zugang-panels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.zugang-panel {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 1rem 1.25rem;
+    min-width: 260px;
+    flex: 1 1 260px;
+}
+
+.zugang-panel h4 {
+    margin-top: 0;
+}
+
+.zugang-password-display {
+    font-family: monospace;
+    font-size: 1.25rem;
+    background: #f8f9fa;
+    border: 1px dashed #adb5bd;
+    border-radius: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    margin: 0.5rem 0;
+    user-select: all;
+}
+
+.zugang-countdown {
+    font-size: 0.85rem;
+}
+
+.zugang-delete-btn {
+    margin-left: 0.5rem;
+}

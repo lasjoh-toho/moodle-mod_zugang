@@ -1,0 +1,73 @@
+name: Build & release mod_zugang
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lint PHP files (syntax check)
+        run: |
+          set -e
+          find . -name '*.php' -not -path './.git/*' -print0 | xargs -0 -n1 php -l
+
+      - name: Stage plugin into a "zugang" folder (what Moodle's installer expects)
+        run: |
+          set -e
+          mkdir -p /tmp/stage/zugang
+          rsync -a --exclude='.git' --exclude='.github' --exclude='.gitignore' \
+                --exclude='README.md' --exclude='dist' ./ /tmp/stage/zugang/
+
+      - name: Verify the plugin looks structurally complete
+        run: |
+          set -e
+          for f in version.php lib.php mod_form.php view.php index.php \
+                   db/install.xml db/access.php db/upgrade.php \
+                   backup/moodle2/backup_zugang_activity_task.class.php \
+                   backup/moodle2/backup_zugang_stepslib.php \
+                   backup/moodle2/restore_zugang_activity_task.class.php \
+                   backup/moodle2/restore_zugang_stepslib.php \
+                   lang/en/zugang.php lang/de/zugang.php pix/icon.svg; do
+            test -f "/tmp/stage/zugang/$f" || { echo "Missing required file: $f"; exit 1; }
+          done
+          php -r '
+            $plugin = new stdClass();
+            require "/tmp/stage/zugang/version.php";
+            if (empty($plugin->component) || $plugin->component !== "mod_zugang") { fwrite(STDERR, "bad component\n"); exit(1); }
+            if (empty($plugin->version)) { fwrite(STDERR, "missing version\n"); exit(1); }
+            echo "version=" . $plugin->version . "\n";
+            echo "release=" . $plugin->release . "\n";
+          ' | tee /tmp/plugin-version.env
+
+      - name: Zip it up
+        run: |
+          set -e
+          mkdir -p dist
+          cd /tmp/stage
+          zip -r "$GITHUB_WORKSPACE/dist/mod_zugang.zip" zugang -x '*.DS_Store'
+
+      - name: Read version/release for the tag
+        id: ver
+        run: |
+          V=$(grep '^version=' /tmp/plugin-version.env | cut -d= -f2)
+          R=$(grep '^release=' /tmp/plugin-version.env | cut -d= -f2)
+          echo "version=$V" >> "$GITHUB_OUTPUT"
+          echo "release=$R" >> "$GITHUB_OUTPUT"
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || format('v{0}', steps.ver.outputs.version) }}
+          name: mod_zugang ${{ steps.ver.outputs.release }}
+          files: dist/mod_zugang.zip
+          body: |
+            Automatisch gebautes Release von mod_zugang (Plugin-Version ${{ steps.ver.outputs.version }}).
+            Installation: Site administration → Plugins → Install plugins → `mod_zugang.zip` hochladen.
