@@ -60,10 +60,24 @@ if ($zugang->intro) {
     echo $OUTPUT->box(format_module_intro('zugang', $zugang, $cm->id), 'generalbox mod_introbox', 'zugangintro');
 }
 
+$fs = get_file_storage();
+$zipfiles = $fs->get_area_files($context->id, 'mod_zugang', 'zipfile', 0, 'filename', false);
+if ($zipfiles) {
+    $zipfile = reset($zipfiles);
+    $zipurl = moodle_url::make_pluginfile_url(
+        $context->id, 'mod_zugang', 'zipfile', 0, '/', $zipfile->get_filename()
+    );
+    echo html_writer::div(
+        html_writer::link($zipurl, get_string('downloadzip', 'mod_zugang', $zipfile->get_filename()),
+            ['class' => 'btn btn-secondary', 'target' => '_blank']),
+        'zugang-zipdownload'
+    );
+}
+
 $panels = [];
 foreach ([
-    'wlan' => ['listid' => $zugang->wlanlistid, 'labelkey' => 'wlanlist'],
-    'dock' => ['listid' => $zugang->docklistid, 'labelkey' => 'docklist'],
+    'wlan' => ['listid' => $zugang->wlanlistid, 'headingkey' => 'headingwlan'],
+    'dock' => ['listid' => $zugang->docklistid, 'headingkey' => 'headingdock'],
 ] as $type => $info) {
     if (empty($info['listid'])) {
         continue;
@@ -75,8 +89,7 @@ foreach ([
     $entry = $canreveal ? \mod_zugang\list_manager::get_confirmed_entry_for_user((int) $info['listid'], (int) $USER->id) : false;
     $panels[] = (object) [
         'type'        => $type,
-        'label'       => get_string($info['labelkey'], 'mod_zugang'),
-        'listname'    => format_string($list->name),
+        'heading'     => get_string($info['headingkey'], 'mod_zugang'),
         'entryid'     => $entry ? (int) $entry->id : 0,
         'hasentry'    => (bool) $entry,
         'accountname' => $entry ? $entry->sourceref : null,
@@ -89,7 +102,7 @@ if (empty($panels)) {
     echo html_writer::start_div('zugang-panels');
     foreach ($panels as $panel) {
         echo html_writer::start_div('zugang-panel', ['data-zugang-type' => $panel->type]);
-        echo html_writer::tag('h4', $panel->label . ' — ' . $panel->listname);
+        echo html_writer::tag('h4', $panel->heading);
         if (!$canreveal) {
             // Nothing to do here for non-students (e.g. viewing teachers).
             echo html_writer::div(get_string('viewonlynote', 'mod_zugang'), 'text-muted');

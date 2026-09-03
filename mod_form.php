@@ -62,8 +62,28 @@ class mod_zugang_mod_form extends moodleform_mod {
         $mform->addHelpButton('revealseconds', 'revealseconds', 'mod_zugang');
         $mform->setType('revealseconds', PARAM_INT);
 
+        $mform->addElement('header', 'zugangzipheader', get_string('zipfile', 'mod_zugang'));
+        $mform->addElement('filemanager', 'zipfile_filemanager', get_string('zipfile', 'mod_zugang'), null,
+            $this->get_zipfile_options());
+        $mform->addHelpButton('zipfile_filemanager', 'zipfile', 'mod_zugang');
+
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();
+    }
+
+    /**
+     * @return array filemanager options for the optional zip attachment —
+     *         a single file, restricted to .zip, size capped by the
+     *         course's normal upload limit.
+     */
+    protected function get_zipfile_options(): array {
+        global $COURSE;
+        return [
+            'subdirs'        => 0,
+            'maxfiles'       => 1,
+            'accepted_types' => ['.zip'],
+            'maxbytes'       => $COURSE->maxbytes ?? 0,
+        ];
     }
 
     protected function list_options(string $type): array {
@@ -81,6 +101,19 @@ class mod_zugang_mod_form extends moodleform_mod {
         }
         if (empty($defaultvalues['docklistid'])) {
             $defaultvalues['docklistid'] = 0;
+        }
+
+        if (!empty($this->current->instance)) {
+            $draftitemid = file_get_submitted_draft_itemid('zipfile_filemanager');
+            file_prepare_draft_area(
+                $draftitemid,
+                $this->context->id,
+                'mod_zugang',
+                'zipfile',
+                0,
+                $this->get_zipfile_options()
+            );
+            $defaultvalues['zipfile_filemanager'] = $draftitemid;
         }
     }
 }

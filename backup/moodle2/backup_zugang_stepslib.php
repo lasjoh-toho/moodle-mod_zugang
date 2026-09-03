@@ -45,6 +45,7 @@ class backup_zugang_activity_structure_step extends backup_activity_structure_st
 
         $zugang->set_source_table('zugang', ['id' => backup::VAR_ACTIVITYID]);
         $zugang->annotate_files('mod_zugang', 'intro', null);
+        $zugang->annotate_files('mod_zugang', 'zipfile', null);
 
         // No userinfo-dependent data is included: reveal logs are an
         // audit trail tied to a specific site's users and are not

@@ -46,7 +46,7 @@ class restore_zugang_activity_task extends restore_activity_task {
     }
 
     public function get_fileareas() {
-        return ['intro'];
+        return ['intro', 'zipfile'];
     }
 
     public function get_configdata_encoded_attributes() {

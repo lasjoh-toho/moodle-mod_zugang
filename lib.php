@@ -54,7 +54,9 @@ function zugang_add_instance($data, $mform = null) {
     $data->timemodified = $data->timecreated;
     $data->wlanlistid = !empty($data->wlanlistid) ? (int) $data->wlanlistid : null;
     $data->docklistid = !empty($data->docklistid) ? (int) $data->docklistid : null;
-    return $DB->insert_record('zugang', $data);
+    $data->id = $DB->insert_record('zugang', $data);
+    zugang_save_zipfile($data);
+    return $data->id;
 }
 
 function zugang_update_instance($data, $mform = null) {
@@ -63,7 +65,31 @@ function zugang_update_instance($data, $mform = null) {
     $data->id = $data->instance;
     $data->wlanlistid = !empty($data->wlanlistid) ? (int) $data->wlanlistid : null;
     $data->docklistid = !empty($data->docklistid) ? (int) $data->docklistid : null;
-    return $DB->update_record('zugang', $data);
+    $DB->update_record('zugang', $data);
+    zugang_save_zipfile($data);
+    return true;
+}
+
+/**
+ * Persists the optional per-activity zip attachment (course/modlib.php
+ * sets $data->coursemodule to the just-created/existing course module id
+ * before calling add_instance()/update_instance(), so a valid module
+ * context is already resolvable at this point even for a brand new
+ * activity).
+ */
+function zugang_save_zipfile($data) {
+    if (empty($data->coursemodule) || !isset($data->zipfile_filemanager)) {
+        return;
+    }
+    $context = context_module::instance($data->coursemodule);
+    file_save_draft_area_files(
+        $data->zipfile_filemanager,
+        $context->id,
+        'mod_zugang',
+        'zipfile',
+        0,
+        ['subdirs' => 0, 'maxfiles' => 1]
+    );
 }
 
 function zugang_delete_instance($id) {
@@ -96,10 +122,33 @@ function zugang_get_coursemodule_info($coursemodule) {
 }
 
 /**
- * File serving is not used (no filearea content beyond the standard
- * intro editor field), but Moodle expects this function to exist for any
- * module that declares FEATURE_MOD_INTRO.
+ * Serves the optional per-activity zip attachment. No other file areas
+ * are exposed by this plugin.
  */
 function zugang_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
-    send_file_not_found();
+    if ($context->contextlevel != CONTEXT_MODULE) {
+        return false;
+    }
+    require_course_login($course, true, $cm);
+    if (!has_capability('mod/zugang:view', $context)) {
+        return false;
+    }
+    if ($filearea !== 'zipfile') {
+        return false;
+    }
+
+    $itemid = (int) array_shift($args);
+    if ($itemid !== 0) {
+        return false;
+    }
+    $filename = array_pop($args);
+    $filepath = $args ? '/' . implode('/', $args) . '/' : '/';
+
+    $fs = get_file_storage();
+    $file = $fs->get_file($context->id, 'mod_zugang', 'zipfile', 0, $filepath, $filename);
+    if (!$file || $file->is_directory()) {
+        send_file_not_found();
+    }
+
+    send_stored_file($file, 0, 0, $forcedownload, $options);
 }
