@@ -63,9 +63,10 @@ class list_manager {
 
     public static function delete_list(int $listid): void {
         global $DB;
-        $DB->delete_records('zugang_reveal_log', [
-            'entryid' => array_keys($DB->get_records('zugang_list_entry', ['listid' => $listid], '', 'id')),
-        ]);
+        $entryids = array_keys($DB->get_records('zugang_list_entry', ['listid' => $listid], '', 'id'));
+        if (!empty($entryids)) {
+            $DB->delete_records_list('zugang_reveal_log', 'entryid', $entryids);
+        }
         $DB->delete_records('zugang_list_entry', ['listid' => $listid]);
         $DB->delete_records('zugang_list', ['id' => $listid]);
         // Activities referencing this list keep the now-dangling id; view.php
@@ -94,9 +95,10 @@ class list_manager {
         $transaction = $DB->start_delegated_transaction();
 
         // Replace old entries for this list.
-        $DB->delete_records('zugang_reveal_log', [
-            'entryid' => array_keys($DB->get_records('zugang_list_entry', ['listid' => $listid], '', 'id')),
-        ]);
+        $oldentryids = array_keys($DB->get_records('zugang_list_entry', ['listid' => $listid], '', 'id'));
+        if (!empty($oldentryids)) {
+            $DB->delete_records_list('zugang_reveal_log', 'entryid', $oldentryids);
+        }
         $DB->delete_records('zugang_list_entry', ['listid' => $listid]);
 
         $counts = ['confirmed' => 0, 'pending' => 0, 'unmatched' => 0];
